@@ -12,7 +12,7 @@ export default function Home() {
   const handleStart = () => {
     if (user) {
       const profile = localStorage.getItem(`path_profile_${user.uid}`);
-      if (profile) router.push('/chat');
+      if (profile) router.push('/chat?new=true');
       else router.push('/profile-setup');
     } else {
       router.push('/login');
@@ -97,19 +97,8 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer style={{ backgroundColor: 'var(--brand-burgundy)', color: 'white', padding: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
-        <div style={{ display: 'flex', gap: 24, fontWeight: 700, fontSize: 18 }}>
-          <span>FB</span>
-          <span>IG</span>
-          <span>X</span>
-        </div>
-        <div style={{ display: 'flex', gap: 24, fontSize: 14, fontWeight: 500, letterSpacing: 1, textTransform: 'uppercase' }}>
-          <span>Privacy Policy</span>
-          <span>Accessibility Statement</span>
-        </div>
-        <div style={{ fontSize: 14, opacity: 0.8 }}>
-          © 2026 Path AI Mentor. Designed for your future.
-        </div>
+      <footer style={{ padding: '16px 40px', textAlign: 'center', fontSize: 13, color: 'var(--brand-dark-purple)', opacity: 0.6 }}>
+        © 2026 Path AI Mentor
       </footer>
     </div>
   );

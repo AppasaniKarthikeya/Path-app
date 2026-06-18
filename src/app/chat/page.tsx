@@ -1,8 +1,8 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -40,9 +40,10 @@ interface UserProfile {
 
 const DAILY_LIMIT = parseInt(process.env.NEXT_PUBLIC_DAILY_CHAT_LIMIT || '50', 10);
 
-export default function ChatPage() {
+function ChatPageInner() {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -94,10 +95,11 @@ export default function ChatPage() {
 
       // Load chat sessions
       const savedSessions = localStorage.getItem(`path_sessions_${user.uid}`);
+      const isNewChat = searchParams.get('new') === 'true';
       if (savedSessions) {
         const parsed = JSON.parse(savedSessions);
         setChatSessions(parsed);
-        if (parsed.length > 0) {
+        if (!isNewChat && parsed.length > 0) {
           setCurrentSessionId(parsed[0].id);
           setMessages(parsed[0].messages);
         } else {
@@ -522,9 +524,6 @@ export default function ChatPage() {
               {isStreaming ? '⏳' : '↑'}
             </button>
           </form>
-          <p style={styles.disclaimer}>
-            Path AI may make mistakes. Always verify important decisions with real mentors and professionals.
-          </p>
         </div>
       </div>
 
@@ -885,3 +884,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'Outfit, sans-serif',
   },
 };
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div style={{ color: '#888', padding: 20 }}>Loading...</div>}>
+      <ChatPageInner />
+    </Suspense>
+  );
+}
