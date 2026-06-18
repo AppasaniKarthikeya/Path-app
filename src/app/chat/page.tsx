@@ -324,24 +324,24 @@ function ChatPageInner() {
           ...(showSidebar ? styles.sidebarOpen : {}),
         }}
       >
+        {/* Sidebar top: logo + close */}
         <div style={styles.sidebarHeader}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => router.push('/')}>
-            <div style={styles.sidebarLogo}>
-              <span style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>पथ</span>
-            </div>
-            <span style={{ color: '#fff', fontWeight: 600, fontSize: 16 }}>Path</span>
+            <span style={{ fontSize: 22, fontWeight: 800, color: '#e8e8e8', fontFamily: 'Outfit, sans-serif' }}>Path</span>
           </div>
           <button onClick={() => setShowSidebar(false)} style={styles.closeSidebar}>
             ✕
           </button>
         </div>
 
+        {/* New Chat */}
         <button onClick={createNewChat} style={styles.newChatButton}>
-          + New Chat
+          <span style={{ fontSize: 16 }}>+</span> New chat
         </button>
 
-        <div style={styles.sidebarSection}>
-          <h3 style={styles.sidebarSectionTitle}>Recent Chats</h3>
+        {/* Recents */}
+        <div style={{ marginTop: 8 }}>
+          <h3 style={styles.sidebarSectionTitle}>Recents</h3>
           <div style={styles.chatList}>
             {chatSessions.map((session) => (
               <button
@@ -352,48 +352,43 @@ function ChatPageInner() {
                   if (window.innerWidth < 768) setShowSidebar(false);
                 }}
                 style={{
-                  ...styles.sidebarBtn,
-                  backgroundColor: session.id === currentSessionId ? '#222' : 'transparent',
-                  color: session.id === currentSessionId ? '#fff' : '#aaa',
-                  marginBottom: 2,
+                  ...styles.chatItem,
+                  backgroundColor: session.id === currentSessionId ? 'rgba(255,255,255,0.1)' : 'transparent',
                 }}
               >
-                💬 {session.title}
+                {session.title}
               </button>
             ))}
           </div>
         </div>
 
-        <div style={styles.sidebarSection}>
-          <h3 style={styles.sidebarSectionTitle}>Profile</h3>
-          <div style={styles.profileInfo}>
-            <p style={styles.profileName}>{profile.name}</p>
-            <p style={styles.profileDetail}>
-              {profile.status === 'student' ? `${profile.degree} • ${profile.year}` : profile.currentJob}
-            </p>
-            {profile.careerGoal && (
-              <p style={styles.profileDetail}>Goal: {profile.careerGoal}</p>
-            )}
-          </div>
-        </div>
-
         <div style={{ flex: 1 }} />
 
+        {/* Bottom actions */}
         <div style={styles.sidebarFooter}>
-          <button onClick={() => setShowSettings(true)} style={styles.sidebarBtn}>
+          <button onClick={() => setShowSettings(true)} style={styles.sidebarActionBtn}>
             ⚙️ Settings
           </button>
-          <button onClick={editProfile} style={styles.sidebarBtn}>
+          <button onClick={editProfile} style={styles.sidebarActionBtn}>
             ✏️ Edit Profile
           </button>
-          <button onClick={handleSignOut} style={{ ...styles.sidebarBtn, color: '#f87171' }}>
-            🚪 Sign Out
+          <button onClick={handleSignOut} style={{...styles.sidebarActionBtn, color: '#ef4444'}}>
+            ↪ Sign Out
           </button>
+          <div style={styles.sidebarUser}>
+            <div style={styles.userAvatar}>
+              {profile.name.charAt(0).toUpperCase()}
+            </div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ color: '#e8e8e8', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{profile.name}</div>
+              <div style={{ color: '#888', fontSize: 11 }}>{profile.status === 'student' ? profile.degree : profile.currentJob}</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Chat Area */}
-      <div style={{...styles.main, marginLeft: showSidebar && isDesktop ? 280 : 0}}>
+      <div style={{...styles.main, marginLeft: showSidebar && isDesktop ? 260 : 0}}>
         {/* Top Bar */}
         <div style={styles.topBar}>
           <button onClick={() => setShowSidebar(!showSidebar)} style={styles.menuButton}>
@@ -409,7 +404,7 @@ function ChatPageInner() {
 
         {/* Messages */}
         <div 
-          style={{...styles.messagesContainer, backgroundColor: `rgba(30, 10, 25, ${glassOpacity})`}} 
+          style={styles.messagesContainer} 
           ref={scrollContainerRef}
           onScroll={handleScroll}
         >
@@ -556,20 +551,19 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     display: 'flex',
     height: '100vh',
-    // Background handled by globals.css
-    fontFamily: 'system-ui, -apple-system, sans-serif',
+    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
     overflow: 'hidden',
   },
-  // Sidebar
+  // Sidebar — Claude-style dark charcoal
   sidebar: {
-    width: 280,
-    backgroundColor: 'var(--brand-dark-purple)',
-    borderRight: '1px solid rgba(255,255,255,0.1)',
+    width: 260,
+    backgroundColor: '#171717',
+    borderRight: '1px solid #2a2a2a',
     display: 'flex',
     flexDirection: 'column' as const,
-    padding: 16,
+    padding: '12px 10px',
     position: 'fixed' as const,
-    left: -300,
+    left: -280,
     top: 0,
     bottom: 0,
     zIndex: 100,
@@ -582,88 +576,98 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  sidebarLogo: {
-    width: 36,
-    height: 36,
-    backgroundColor: 'var(--brand-burgundy)',
-    borderRadius: 8,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 16,
+    padding: '4px 6px',
   },
   closeSidebar: {
     background: 'none',
     border: 'none',
-    color: '#888',
-    fontSize: 18,
+    color: '#666',
+    fontSize: 16,
     cursor: 'pointer',
     padding: 4,
   },
   newChatButton: {
-    padding: '10px 16px',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    border: '1px solid rgba(255,255,255,0.2)',
+    padding: '10px 14px',
+    backgroundColor: 'transparent',
+    border: '1px solid #333',
     borderRadius: 8,
-    color: '#fff',
+    color: '#e8e8e8',
     fontSize: 14,
+    fontWeight: 500,
     cursor: 'pointer',
-    marginBottom: 20,
-    textAlign: 'left' as const,
-  },
-  sidebarSection: {
     marginBottom: 16,
+    textAlign: 'left' as const,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
   },
   sidebarSectionTitle: {
     fontSize: 11,
-    fontWeight: 600,
+    fontWeight: 500,
     color: '#666',
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
     marginBottom: 8,
+    padding: '0 6px',
   },
   chatList: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: 4,
-    maxHeight: 250,
+    gap: 2,
+    flex: 1,
     overflowY: 'auto' as const,
-    marginBottom: 16,
   },
-  profileInfo: {
-    padding: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+  chatItem: {
+    padding: '8px 12px',
+    background: 'none',
+    border: 'none',
+    color: '#b4b4b4',
+    fontSize: 13,
+    cursor: 'pointer',
+    textAlign: 'left' as const,
     borderRadius: 8,
-  },
-  profileName: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 600,
-    margin: '0 0 4px 0',
-  },
-  profileDetail: {
-    color: '#888',
-    fontSize: 12,
-    margin: '2px 0',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden' as const,
+    textOverflow: 'ellipsis' as const,
+    transition: 'background-color 0.15s',
   },
   sidebarFooter: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: 4,
+    gap: 2,
+    borderTop: '1px solid #2a2a2a',
+    paddingTop: 8,
   },
-  sidebarBtn: {
+  sidebarActionBtn: {
     padding: '8px 12px',
     background: 'none',
     border: 'none',
-    color: '#aaa',
+    color: '#b4b4b4',
     fontSize: 13,
     cursor: 'pointer',
     textAlign: 'left' as const,
     borderRadius: 6,
-    whiteSpace: 'nowrap' as const,
-    overflow: 'hidden' as const,
-    textOverflow: 'ellipsis' as const,
+  },
+  sidebarUser: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '10px 6px 4px',
+    marginTop: 4,
+  },
+  userAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    backgroundColor: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#e8e8e8',
+    fontSize: 14,
+    fontWeight: 700,
+    flexShrink: 0,
   },
   main: {
     flex: 1,
@@ -676,8 +680,8 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     padding: '12px 16px',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
-    backgroundColor: 'rgba(74, 10, 51, 0.7)',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(20, 10, 18, 0.9)',
     backdropFilter: 'blur(10px)',
   },
   menuButton: {
@@ -710,7 +714,7 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     overflowY: 'auto' as const,
     padding: '20px 16px',
-    backdropFilter: 'blur(10px)',
+    backgroundColor: '#1a1018',
   },
   welcomeContainer: {
     textAlign: 'center' as const,
@@ -804,7 +808,8 @@ const styles: Record<string, React.CSSProperties> = {
   // Input
   inputContainer: {
     padding: '12px 16px 16px',
-    backgroundColor: 'transparent',
+    backgroundColor: '#1a1018',
+    borderTop: '1px solid rgba(255,255,255,0.06)',
   },
   inputForm: {
     display: 'flex',
@@ -816,14 +821,14 @@ const styles: Record<string, React.CSSProperties> = {
   inputField: {
     flex: 1,
     padding: '12px 16px',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: '#2a2028',
+    border: '1px solid #3a3038',
     borderRadius: 12,
-    color: '#fff',
+    color: '#e8e8e8',
     fontSize: 14,
     outline: 'none',
     resize: 'none' as const,
-    fontFamily: 'inherit',
+    fontFamily: 'Inter, system-ui, sans-serif',
     lineHeight: 1.5,
     maxHeight: 120,
     boxSizing: 'border-box' as const,
