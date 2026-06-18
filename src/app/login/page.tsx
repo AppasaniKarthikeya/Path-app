@@ -109,7 +109,7 @@ export default function LoginPage() {
 
         {/* Description */}
         <div style={styles.description}>
-          <p>Confused about your career path? Don&apos;t worry.</p>
+          <p>Confused about your career path? Don't worry.</p>
           <p>Path is your personal AI mentor who guides you with practical, honest advice — like a wise elder brother.</p>
         </div>
 
@@ -186,17 +186,19 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0a0a0a',
     padding: 20,
-    fontFamily: 'system-ui, -apple-system, sans-serif',
+    // background gradient is handled by globals.css body
   },
   card: {
-    backgroundColor: '#111',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    borderRadius: 24,
     padding: '40px 36px',
     maxWidth: 440,
     width: '100%',
-    border: '1px solid #222',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
+    boxShadow: '0 8px 32px 0 rgba(107, 15, 73, 0.1)',
   },
   logoContainer: {
     textAlign: 'center' as const,
@@ -205,40 +207,42 @@ const styles: Record<string, React.CSSProperties> = {
   logo: {
     width: 80,
     height: 80,
-    backgroundColor: '#000',
+    backgroundColor: 'var(--brand-burgundy)',
     borderRadius: 16,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '2px solid #333',
     marginBottom: 12,
   },
   logoText: {
     fontSize: 36,
-    fontWeight: 700,
+    fontWeight: 800,
     color: '#fff',
   },
   appName: {
-    fontSize: 28,
-    fontWeight: 700,
-    color: '#fff',
+    fontSize: 32,
+    fontWeight: 800,
+    fontFamily: 'Outfit, sans-serif',
+    color: 'var(--brand-burgundy)',
     margin: '0 0 4px 0',
   },
   tagline: {
-    fontSize: 14,
-    color: '#888',
+    fontSize: 15,
+    fontWeight: 500,
+    color: 'var(--brand-dark-purple)',
     margin: 0,
   },
   description: {
     textAlign: 'center' as const,
     marginBottom: 28,
-    color: '#aaa',
-    fontSize: 14,
+    color: 'var(--brand-dark-purple)',
+    fontSize: 15,
     lineHeight: 1.6,
+    opacity: 0.9,
   },
   errorBox: {
-    backgroundColor: '#2d1b1b',
-    border: '1px solid #5c2626',
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    border: '1px solid rgba(255, 107, 107, 0.3)',
     borderRadius: 8,
     padding: '10px 14px',
     marginBottom: 16,
@@ -277,9 +281,10 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #444',
   },
   disabledButton: {
-    backgroundColor: '#1a1a1a',
-    color: '#666',
-    border: '1px solid #2a2a2a',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    color: 'var(--brand-dark-purple)',
+    opacity: 0.6,
+    border: 'none',
     cursor: 'not-allowed',
   },
   buttonDisabled: {
@@ -291,8 +296,10 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center' as const,
   },
   footerText: {
-    color: '#555',
-    fontSize: 12,
+    color: 'var(--brand-dark-purple)',
+    fontWeight: 500,
+    fontSize: 13,
+    opacity: 0.8,
     margin: 0,
   },
   loadingSpinner: {

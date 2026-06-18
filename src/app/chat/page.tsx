@@ -56,10 +56,32 @@ export default function ChatPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const [glassOpacity, setGlassOpacity] = useState(0.85);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const savedOpacity = localStorage.getItem('path_glass_opacity');
+    if (savedOpacity) setGlassOpacity(parseFloat(savedOpacity));
+  }, []);
+
+  const handleOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setGlassOpacity(val);
+    localStorage.setItem('path_glass_opacity', val.toString());
+  };
+
   // Load profile and chat history
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push('/');
       return;
     }
     if (user) {
@@ -274,7 +296,7 @@ export default function ChatPage() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push('/login');
+    router.push('/');
   };
 
   const editProfile = () => {
@@ -301,7 +323,7 @@ export default function ChatPage() {
         }}
       >
         <div style={styles.sidebarHeader}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => router.push('/')}>
             <div style={styles.sidebarLogo}>
               <span style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>पथ</span>
             </div>
@@ -356,6 +378,9 @@ export default function ChatPage() {
         <div style={{ flex: 1 }} />
 
         <div style={styles.sidebarFooter}>
+          <button onClick={() => setShowSettings(true)} style={styles.sidebarBtn}>
+            ⚙️ Settings
+          </button>
           <button onClick={editProfile} style={styles.sidebarBtn}>
             ✏️ Edit Profile
           </button>
@@ -366,14 +391,14 @@ export default function ChatPage() {
       </div>
 
       {/* Main Chat Area */}
-      <div style={styles.main}>
+      <div style={{...styles.main, marginLeft: showSidebar && isDesktop ? 280 : 0}}>
         {/* Top Bar */}
         <div style={styles.topBar}>
           <button onClick={() => setShowSidebar(!showSidebar)} style={styles.menuButton}>
             ☰
           </button>
           <div style={styles.topBarCenter}>
-            <span style={styles.topBarTitle}>Path AI Mentor</span>
+            <span style={{...styles.topBarTitle, cursor: 'pointer'}} onClick={() => router.push('/')}>Path AI Mentor</span>
           </div>
           <div style={styles.limitBadge}>
             {dailyCount}/{DAILY_LIMIT} today
@@ -382,7 +407,7 @@ export default function ChatPage() {
 
         {/* Messages */}
         <div 
-          style={styles.messagesContainer} 
+          style={{...styles.messagesContainer, backgroundColor: `rgba(30, 10, 25, ${glassOpacity})`}} 
           ref={scrollContainerRef}
           onScroll={handleScroll}
         >
@@ -502,6 +527,28 @@ export default function ChatPage() {
           </p>
         </div>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div style={styles.settingsOverlay}>
+          <div style={styles.settingsModal}>
+            <h3 style={{color: '#fff', fontSize: 18, marginBottom: 16, fontFamily: 'Outfit, sans-serif'}}>UI Settings</h3>
+            <div style={{marginBottom: 20}}>
+              <label style={{color: '#ccc', display: 'block', marginBottom: 8, fontSize: 13}}>Glass Transparency (Opacity)</label>
+              <input 
+                type="range" 
+                min="0.1" 
+                max="1" 
+                step="0.05" 
+                value={glassOpacity} 
+                onChange={handleOpacityChange} 
+                style={{width: '100%'}}
+              />
+            </div>
+            <button onClick={() => setShowSettings(false)} style={styles.settingsCloseBtn}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -510,15 +557,15 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     display: 'flex',
     height: '100vh',
-    backgroundColor: '#0a0a0a',
+    // Background handled by globals.css
     fontFamily: 'system-ui, -apple-system, sans-serif',
     overflow: 'hidden',
   },
   // Sidebar
   sidebar: {
     width: 280,
-    backgroundColor: '#111',
-    borderRight: '1px solid #222',
+    backgroundColor: 'var(--brand-dark-purple)',
+    borderRight: '1px solid rgba(255,255,255,0.1)',
     display: 'flex',
     flexDirection: 'column' as const,
     padding: 16,
@@ -541,12 +588,11 @@ const styles: Record<string, React.CSSProperties> = {
   sidebarLogo: {
     width: 36,
     height: 36,
-    backgroundColor: '#000',
+    backgroundColor: 'var(--brand-burgundy)',
     borderRadius: 8,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid #333',
   },
   closeSidebar: {
     background: 'none',
@@ -558,8 +604,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   newChatButton: {
     padding: '10px 16px',
-    backgroundColor: '#1a1a1a',
-    border: '1px solid #333',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: 8,
     color: '#fff',
     fontSize: 14,
@@ -588,7 +634,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   profileInfo: {
     padding: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 8,
   },
   profileName: {
@@ -620,19 +666,20 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: 'hidden' as const,
     textOverflow: 'ellipsis' as const,
   },
-  // Main area
   main: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column' as const,
     height: '100vh',
+    transition: 'margin-left 0.3s ease',
   },
   topBar: {
     display: 'flex',
     alignItems: 'center',
     padding: '12px 16px',
-    borderBottom: '1px solid #1a1a1a',
-    backgroundColor: '#0a0a0a',
+    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(74, 10, 51, 0.7)',
+    backdropFilter: 'blur(10px)',
   },
   menuButton: {
     background: 'none',
@@ -654,9 +701,9 @@ const styles: Record<string, React.CSSProperties> = {
   },
   limitBadge: {
     padding: '4px 10px',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
-    color: '#888',
+    color: '#ccc',
     fontSize: 12,
   },
   // Messages
@@ -664,6 +711,7 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     overflowY: 'auto' as const,
     padding: '20px 16px',
+    backdropFilter: 'blur(10px)',
   },
   welcomeContainer: {
     textAlign: 'center' as const,
@@ -674,12 +722,11 @@ const styles: Record<string, React.CSSProperties> = {
   welcomeLogo: {
     width: 80,
     height: 80,
-    backgroundColor: '#111',
+    backgroundColor: 'var(--brand-burgundy)',
     borderRadius: 20,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid #222',
     marginBottom: 16,
   },
   welcomeTitle: {
@@ -701,8 +748,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   suggestionCard: {
     padding: '14px 16px',
-    backgroundColor: '#111',
-    border: '1px solid #222',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: 12,
     color: '#ccc',
     fontSize: 13,
@@ -721,20 +768,21 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 16px',
   },
   userBubble: {
-    backgroundColor: '#2563eb',
+    backgroundColor: 'var(--brand-orange)',
     color: '#fff',
     borderBottomRightRadius: 4,
+    boxShadow: '0 4px 15px rgba(249, 136, 74, 0.2)',
   },
   assistantBubble: {
-    backgroundColor: '#1a1a1a',
-    color: '#ddd',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#fff',
     borderBottomLeftRadius: 4,
-    border: '1px solid #222',
+    border: '1px solid rgba(255,255,255,0.2)',
   },
   botLabel: {
     fontSize: 11,
     fontWeight: 600,
-    color: '#4ade80',
+    color: 'var(--brand-peach)',
     marginBottom: 6,
   },
   messageContent: {
@@ -756,9 +804,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   // Input
   inputContainer: {
-    padding: '12px 16px 8px',
-    borderTop: '1px solid #1a1a1a',
-    backgroundColor: '#0a0a0a',
+    padding: '12px 16px 16px',
+    backgroundColor: 'transparent',
   },
   inputForm: {
     display: 'flex',
@@ -770,8 +817,8 @@ const styles: Record<string, React.CSSProperties> = {
   inputField: {
     flex: 1,
     padding: '12px 16px',
-    backgroundColor: '#1a1a1a',
-    border: '1px solid #333',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: 12,
     color: '#fff',
     fontSize: 14,
@@ -785,7 +832,7 @@ const styles: Record<string, React.CSSProperties> = {
   sendButton: {
     width: 42,
     height: 42,
-    backgroundColor: '#4ade80',
+    backgroundColor: 'var(--brand-orange)',
     border: 'none',
     borderRadius: 10,
     color: '#000',
@@ -798,17 +845,43 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   sendButtonDisabled: {
-    backgroundColor: '#333',
-    color: '#666',
+    opacity: 0.5,
     cursor: 'not-allowed',
   },
   disclaimer: {
     textAlign: 'center' as const,
     fontSize: 11,
-    color: '#555',
-    margin: '8px 0 0',
-    maxWidth: 720,
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    color: '#888',
+    marginTop: 8,
+  },
+  // Settings
+  settingsOverlay: {
+    position: 'fixed' as const,
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    backdropFilter: 'blur(4px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+  },
+  settingsModal: {
+    backgroundColor: 'rgba(20, 5, 15, 0.95)',
+    padding: 24,
+    borderRadius: 16,
+    border: '1px solid rgba(255,255,255,0.2)',
+    width: 300,
+    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+  },
+  settingsCloseBtn: {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: 'var(--brand-orange)',
+    border: 'none',
+    borderRadius: 8,
+    color: '#000',
+    fontWeight: 600,
+    cursor: 'pointer',
+    fontFamily: 'Outfit, sans-serif',
   },
 };

@@ -1,26 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core brand colors based on vibrant references */
+  --brand-lilac: #d3c5e5;
+  --brand-peach: #fcab64;
+  --brand-orange: #f9884a;
+  --brand-burgundy: #6b0f49;
+  --brand-dark-purple: #4a0a33;
+  --brand-accent: #8b1c62;
+  
+  --background: var(--brand-lilac);
+  --foreground: var(--brand-dark-purple);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  /* Smooth vibrant gradient background */
+  background: radial-gradient(120% 100% at 50% 120%, var(--brand-peach) 0%, var(--brand-orange) 40%, var(--brand-lilac) 100%);
+  background-attachment: fixed;
 }
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(107, 15, 73, 0.1);
+  border-radius: 24px;
+}
+
+.glass-panel-dark {
+  background: rgba(74, 10, 51, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: var(--brand-burgundy);
+  color: white;
+  transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(107, 15, 73, 0.4);
+}
+
